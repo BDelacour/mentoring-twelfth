@@ -1,5 +1,6 @@
 import click
 
+from python_p12.controllers.authentication import login, logout
 from python_p12.controllers.user import users
 
 
@@ -7,4 +8,7 @@ from python_p12.controllers.user import users
 def cli():
     pass
 
+
 cli.add_command(users)
+cli.add_command(login)
+cli.add_command(logout)

@@ -4,8 +4,9 @@ from sqlalchemy.orm import Session
 
 from python_p12.database import orm
 from python_p12.models.user import User
-from python_p12.views.users import display_users, display_user_form, display_user, display_user_select, \
-    display_user_deletion
+from python_p12.validators import validate_email, validate_password, validate_name
+from python_p12.views.users import display_users, display_user, display_user_deletion, display_user_exists, \
+    display_user_not_exists
 
 
 @click.group(name='users')
@@ -14,14 +15,19 @@ def users():
 
 
 @users.command(name='create')
+@click.option('--fullname', prompt='Full Name', callback=validate_name)
+@click.option('--email', prompt='Email', callback=validate_email)
+@click.option('--password', prompt='Password', hide_input=True, callback=validate_password)
 @orm
-def _create(session: Session):
-    user_info = display_user_form()
+def _create(session, fullname, email, password):
+    user = session.scalar(select(User).where(User.email == email).limit(1)).first()
+    if user:
+        return display_user_exists(user)
     user = User(
-        fullname=user_info['fullname'],
-        email=user_info['email'],
+        fullname=fullname,
+        email=email,
     )
-    user.set_password(user_info['password'])
+    user.set_password(password)
     session.add(user)
     session.commit()
     return display_user(user, separator=True)
@@ -35,11 +41,12 @@ def _list(session: Session):
 
 
 @users.command(name='delete')
+@click.option('--id', 'uid', prompt='Id', type=int)
 @orm
-def _delete(session: Session):
-    user_list = session.scalars(select(User)).all()
-    user = display_user_select(user_list)
+def _delete(session: Session, uid):
+    user = session.scalars(select(User).where(User.id == uid).limit(1)).first()
+    if not user:
+        return display_user_not_exists()
     session.delete(user)
     session.commit()
     return display_user_deletion(user)
-
