@@ -1,10 +1,10 @@
 from typing import List
 
 import bcrypt
-from sqlalchemy import Column, String, Integer, DateTime, func
+from sqlalchemy import Column, String, Integer, DateTime
 from sqlalchemy.orm import relationship, Mapped
 
-from python_p12.models.base import Base
+from python_p12.models.base import Base, utcnow
 
 
 class User(Base):
@@ -14,8 +14,8 @@ class User(Base):
     fullname: Mapped[str] = Column(String(128), nullable=False)
     email: Mapped[str] = Column(String(320), unique=True, nullable=False)
     password_hash: Mapped[str] = Column(String(60), nullable=False)
-    creation_date: Mapped[DateTime] = Column(DateTime, server_default=func.utcnow(), nullable=False)
-    update_date: Mapped[DateTime] = Column(DateTime, server_default=func.utcnow(), nullable=False)
+    creation_date: Mapped[DateTime] = Column(DateTime, server_default=utcnow(), nullable=False)
+    update_date: Mapped[DateTime] = Column(DateTime, server_default=utcnow(), onupdate=utcnow(), nullable=False)
 
     clients: Mapped[List['Client']] = relationship('Client', back_populates='commercial_user')
 
