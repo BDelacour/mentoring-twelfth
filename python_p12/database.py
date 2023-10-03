@@ -12,5 +12,6 @@ def orm(func):
 
         SessionMaker: sessionmaker[Session] = sessionmaker(bind=engine)
         with SessionMaker() as session:
-            return func(session, *args, **kwargs)
+            kwargs['session'] = session
+            return func(*args, **kwargs)
     return wrapper
