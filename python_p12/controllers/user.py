@@ -11,12 +11,12 @@ from python_p12.views.users import display_users, display_user, display_user_del
 
 
 @click.group(name='users')
+@authenticated
 def users(*args, **kwargs):
     pass
 
 
 @users.command(name='create')
-@authenticated
 @click.option('--fullname', prompt='Full Name', callback=validate_name)
 @click.option('--email', prompt='Email', callback=validate_email)
 @click.option('--password', prompt='Password', hide_input=True, callback=validate_password)
@@ -36,9 +36,8 @@ def _create(session, fullname, email, password, *args, **kwargs):
 
 
 @users.command(name='list')
-@authenticated
 @orm
-def _list(session: Session, *args, **kwargs):
+def _list(session, *args, **kwargs):
     user_list = session.scalars(select(User)).all()
     return display_users(user_list)
 
@@ -46,7 +45,7 @@ def _list(session: Session, *args, **kwargs):
 @users.command(name='delete')
 @click.option('--id', 'uid', prompt='Id', type=int)
 @orm
-def _delete(session: Session, uid, *args, **kwargs):
+def _delete(session, uid, *args, **kwargs):
     user = session.scalars(select(User).where(User.id == uid).limit(1)).first()
     if not user:
         return display_user_not_exists()
