@@ -1,5 +1,8 @@
+import click
+
+
 def display_login_error():
-    print('Login failed')
+    raise click.ClickException('Login failed')
 
 
 def display_login_success():

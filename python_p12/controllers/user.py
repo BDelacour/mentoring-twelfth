@@ -20,7 +20,7 @@ def users():
 @click.option('--password', prompt='Password', hide_input=True, callback=validate_password)
 @orm
 def _create(session, fullname, email, password):
-    user = session.scalar(select(User).where(User.email == email).limit(1)).first()
+    user = session.scalars(select(User).where(User.email == email).limit(1)).first()
     if user:
         return display_user_exists(user)
     user = User(

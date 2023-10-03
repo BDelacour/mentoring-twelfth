@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 99ca572ab545
+Revision ID: da72d2c5ffdd
 Revises: 
-Create Date: 2023-10-03 00:16:59.513133
+Create Date: 2023-10-03 17:32:37.121497
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '99ca572ab545'
+revision: str = 'da72d2c5ffdd'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,8 +25,8 @@ def upgrade() -> None:
     sa.Column('fullname', sa.String(length=128), nullable=False),
     sa.Column('email', sa.String(length=320), nullable=False),
     sa.Column('password_hash', sa.String(length=60), nullable=False),
-    sa.Column('creation_date', sa.DateTime(), server_default=sa.text('(utcnow())'), nullable=False),
-    sa.Column('update_date', sa.DateTime(), nullable=False),
+    sa.Column('creation_date', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', CURRENT_TIMESTAMP)"), nullable=False),
+    sa.Column('update_date', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', CURRENT_TIMESTAMP)"), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
@@ -37,8 +37,8 @@ def upgrade() -> None:
     sa.Column('phone_numer', sa.String(length=32), nullable=False),
     sa.Column('company_name', sa.String(length=64), nullable=False),
     sa.Column('commercial_user_id', sa.Integer(), nullable=False),
-    sa.Column('creation_date', sa.DateTime(), server_default=sa.text('(utcnow())'), nullable=False),
-    sa.Column('update_date', sa.DateTime(), nullable=False),
+    sa.Column('creation_date', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', CURRENT_TIMESTAMP)"), nullable=False),
+    sa.Column('update_date', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', CURRENT_TIMESTAMP)"), nullable=False),
     sa.ForeignKeyConstraint(['commercial_user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

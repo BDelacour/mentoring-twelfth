@@ -1,5 +1,7 @@
 from typing import List
 
+import click
+
 from python_p12.models.user import User
 
 
@@ -15,11 +17,11 @@ def display_users(user_list: List[User]):
 
 
 def display_user_exists(user: User):
-    print(f"User \"{user.email}\" already exists")
+    raise click.ClickException(f"User \"{user.email}\" already exists")
 
 
 def display_user_not_exists():
-    print(f"Requested user does not exist")
+    raise click.ClickException(f"Requested user does not exist")
 
 
 def display_user_deletion(user: User):

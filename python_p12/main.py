@@ -1,3 +1,5 @@
+import sys
+
 from python_p12.controllers import cli
 
 

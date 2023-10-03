@@ -8,7 +8,7 @@ def orm(func):
     def wrapper(*args, **kwargs):
         engine = create_engine('postgresql://postgres:mysecretpassword@localhost:5432/postgres')
 
-        Base.metadata.create_all(engine)
+        Base.metadata.bind = engine
 
         SessionMaker: sessionmaker[Session] = sessionmaker(bind=engine)
         with SessionMaker() as session:
