@@ -3,6 +3,7 @@ import os
 import click
 import jwt
 from jwt import InvalidTokenError
+from sqlalchemy import select
 
 from python_p12.models.user import User
 
@@ -26,17 +27,27 @@ def clear_authentication():
         os.unlink(token_filepath)
 
 
-def authenticated(func):
-    def wrapper(*args, **kwargs):
+def auth_middleware(func):
+    def _get_user_from_token_if_valid(session) -> User | None:
         if not os.path.exists(token_filepath) or not os.path.isfile(token_filepath):
-            raise click.ClickException('Unauthorized')
+            return None
+
         with open(token_filepath, 'r') as fp:
             token = fp.read()
+
         try:
             payload = jwt.decode(token, SECRET, algorithms=["HS256"])
-            kwargs['payload'] = payload
         except InvalidTokenError:
-            raise click.ClickException('Unauthorized')
-        return func(*args, **kwargs)
+            return None
+        return session.scalar(select(User).where(User.id == payload['uid']))
+
+    def wrapper(ctx, *args, **kwargs):
+        ctx.ensure_object(dict)
+
+        user = _get_user_from_token_if_valid(ctx.obj['session'])
+        if user:
+            ctx.obj['user'] = user
+
+        return func(ctx, *args, **kwargs)
 
     return wrapper
