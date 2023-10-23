@@ -1,4 +1,5 @@
 import os
+import datetime
 
 import click
 import jwt
@@ -13,10 +14,11 @@ app_token_dir = os.path.join(os.path.expanduser('~'), '.epicevents')
 os.makedirs(app_token_dir, exist_ok=True)
 
 token_filepath = os.path.join(app_token_dir, f"user.key")
+token_duration = 3600
 
 
 def authenticate(user: User):
-    token = jwt.encode({"uid": user.id}, SECRET, algorithm="HS256")
+    token = jwt.encode({"uid": user.id, "exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=token_duration)}, SECRET, algorithm="HS256")
     clear_authentication()
     with open(token_filepath, 'w') as fp:
         fp.write(token)
