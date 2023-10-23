@@ -2,7 +2,7 @@ import click
 from sqlalchemy import select
 
 from epic_events.models.client import Client
-from epic_events.models.role import Roles
+from epic_events.models.role import Roles, Role
 from epic_events.models.user import User
 from epic_events.permissions import permission, IsAuthenticated
 from epic_events.validators import validate_email, validate_name, validate_phone_number
@@ -29,8 +29,9 @@ def _create(ctx, fullname, email, phone_number, company, suid, *args, **kwargs):
     session = ctx.obj['session']
     sale_user = session.scalar(
         select(User)
-        .where(User.id == suid
-               and User.role.name == Roles.SALE.name)
+        .join(User.role)
+        .where(User.id == suid)
+        .where(Role.name == Roles.SALE.name)
     )
     if not sale_user:
         return display_user_not_exists()
@@ -68,8 +69,9 @@ def _update(ctx, cid, *args, **kwargs):
     if updated_client_info['sale_user_id'] is not None:
         sale_user = session.scalar(
             select(User)
-            .where(User.id == updated_client_info['sale_user_id']
-                   and User.role.name == Roles.SALE.name)
+            .join(User.role)
+            .where(User.id == updated_client_info['sale_user_id'])
+            .where(Role.name == Roles.SALE.name)
         )
         if not sale_user:
             return display_user_not_exists()

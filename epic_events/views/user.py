@@ -27,11 +27,11 @@ def display_user_exists(user: User):
 
 
 def display_role_not_exists():
-    raise click.ClickException(f"Requested role does not exist ({', '.join([r.name.capitalize() for r in Roles])})")
+    raise click.ClickException(f"Requested role is not valid ({', '.join([r.name.capitalize() for r in Roles])})")
 
 
 def display_user_not_exists():
-    raise click.ClickException('Requested user does not exist')
+    raise click.ClickException('Requested user is not valid')
 
 
 def display_user_deletion(user: User):
