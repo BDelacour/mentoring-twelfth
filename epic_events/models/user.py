@@ -21,8 +21,8 @@ class User(Base):
 
     role: Mapped[Role] = relationship('Role', back_populates='users')
 
-    clients: Mapped[List['Client']] = relationship('Client', back_populates='commercial_user')
-    contracts: Mapped[List['Contract']] = relationship('Contract', back_populates='commercial_user')
+    clients: Mapped[List['Client']] = relationship('Client', back_populates='sale_user')
+    contracts: Mapped[List['Contract']] = relationship('Contract', back_populates='sale_user')
     events: Mapped[List['Event']] = relationship('Event', back_populates='support_user')
 
     def set_password(self, password: str) -> None:

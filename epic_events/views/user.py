@@ -3,14 +3,18 @@ from typing import List
 
 import click
 
+from epic_events.models.role import Roles
 from epic_events.models.user import User
-from epic_events.validators import validate_name, validate_email, validate_password
+from epic_events.validators import validate_name, validate_email, validate_password, validate_role
 
 
 def display_user(user: User, separator: bool = False):
     if separator:
         print("---")
-    print(f"Id : {user.id}\nFullname : {user.fullname}\nEmail : {user.email}")
+    print(f"Id : {user.id}\n"
+          f"Fullname : {user.fullname}\n"
+          f"Email : {user.email}\n"
+          f"Role : {user.role.name.capitalize()}")
 
 
 def display_users(user_list: List[User]):
@@ -20,6 +24,10 @@ def display_users(user_list: List[User]):
 
 def display_user_exists(user: User):
     raise click.ClickException(f"User \"{user.email}\" already exists")
+
+
+def display_role_not_exists():
+    raise click.ClickException(f"Requested role does not exist ({', '.join([r.name.capitalize() for r in Roles])})")
 
 
 def display_user_not_exists():
@@ -35,16 +43,20 @@ def ask_for_user_update(user: User):
     display_user(user)
     print("---\nLeave empty for same")
 
-    fullname = input("Full name : ")
-    if fullname != "":
+    fullname = input("Full name : ") or None
+    if fullname:
         validate_name(None, "fullname", fullname)
 
-    email = input("Email : ")
-    if email != "":
+    email = input("Email : ") or None
+    if email:
         validate_email(None, "email", email)
 
-    password = getpass("New password : ")
-    if password != "":
+    role = input("Role : ") or None
+    if role:
+        validate_role(None, "role", role)
+
+    password = getpass("New password : ") or None
+    if password:
         validate_password(None, None, password)
         old_password = getpass("Old password : ")
         if not user.check_password(old_password):
@@ -55,4 +67,3 @@ def ask_for_user_update(user: User):
         'email': email,
         'password': password
     }
-

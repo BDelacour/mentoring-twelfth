@@ -1,9 +1,16 @@
+from enum import Enum
 from typing import List
 
 from sqlalchemy import Column, String, Integer, DateTime
 from sqlalchemy.orm import relationship, Mapped
 
 from epic_events.models.base import Base, utcnow
+
+
+class Roles(Enum):
+    SALE = 1,
+    SUPPORT = 2,
+    MANAGEMENT = 3
 
 
 class Role(Base):
