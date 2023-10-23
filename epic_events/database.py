@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from python_p12.models.base import Base
+from epic_events.models.base import Base
 
 
 def orm_middleware(func):

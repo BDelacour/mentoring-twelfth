@@ -7,5 +7,6 @@ __all__ = [
     'client',
     'contract',
     'event',
+    'role',
     'user',
 ]

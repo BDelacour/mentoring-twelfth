@@ -5,7 +5,7 @@ import jwt
 from jwt import InvalidTokenError
 from sqlalchemy import select
 
-from python_p12.models.user import User
+from epic_events.models.user import User
 
 SECRET = "changeme"
 

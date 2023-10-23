@@ -1,14 +1,14 @@
 [tool.poetry]
-name = "python-p12"
+name = "epic_events"
 version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
-packages = [{include = "python_p12"}]
+packages = [{include = "epic_events"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-greenlet = "^2.0.2" # Week version locking from sqlalchemy, 3.0.0 does not work
+greenlet = "^2.0.2" # Weak version locking from sqlalchemy, 3.0.0 does not work
 sqlalchemy = "^2.0.21"
 bcrypt = "^4.0.1"
 click = "^8.1.7"
