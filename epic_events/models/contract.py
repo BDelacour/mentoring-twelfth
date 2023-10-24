@@ -12,8 +12,7 @@ class Contract(Base):
     __tablename__ = 'contracts'
 
     id: Mapped[int] = Column(Integer, primary_key=True)
-    client_id: Mapped[int] = Column(Integer, ForeignKey('clients.id'), nullable=False)
-    sale_user_id: Mapped[int] = Column(Integer, ForeignKey('users.id'), nullable=False)
+    client_id: Mapped[int] = Column(Integer, ForeignKey('clients.id', ondelete='CASCADE'), nullable=False)
     total_amount: Mapped[int] = Column(Integer, nullable=False)
     remaining_amount: Mapped[int] = Column(Integer, nullable=False)
     is_signed: Mapped[bool] = Column(Boolean, nullable=False)
@@ -21,6 +20,5 @@ class Contract(Base):
     update_date: Mapped[DateTime] = Column(DateTime, server_default=utcnow(), onupdate=utcnow(), nullable=False)
 
     client: Mapped[Client] = relationship('Client', back_populates='contracts')
-    sale_user: Mapped[User] = relationship('User', back_populates='contracts')
 
     events: Mapped[List['Event']] = relationship('Event', back_populates='contract')

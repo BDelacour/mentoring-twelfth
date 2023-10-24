@@ -49,12 +49,6 @@ def ask_for_event_update(event: Event):
             raise click.ClickException('Invalid contract id')
         contract_id = int(contract_id)
 
-    support_user_id = input("Support User Id : ") or None
-    if support_user_id:
-        if not support_user_id.isdigit():
-            raise click.ClickException('Invalid support user id')
-        support_user_id = int(support_user_id)
-
     start_date = input("Start Date (DD/MM/YYYY) : ") or None
     if start_date:
         start_date = datetime.strptime(start_date, '%d/%m/%Y')
@@ -81,7 +75,6 @@ def ask_for_event_update(event: Event):
 
     return {
         'contract_id': contract_id,
-        'support_user_id': support_user_id,
         'start_date': start_date,
         'end_date': end_date,
         'location': location,

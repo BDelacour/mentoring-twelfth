@@ -15,7 +15,7 @@ class Client(Base):
     email: Mapped[str] = Column(String(320), nullable=False)
     phone_number: Mapped[str] = Column(String(32), nullable=False)
     company_name: Mapped[str] = Column(String(64), nullable=False)
-    sale_user_id: Mapped[int] = Column(Integer, ForeignKey('users.id'), nullable=False)
+    sale_user_id: Mapped[int] = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'), nullable=True)
     creation_date: Mapped[DateTime] = Column(DateTime, server_default=utcnow(), nullable=False)
     update_date: Mapped[DateTime] = Column(DateTime, server_default=utcnow(), onupdate=utcnow(), nullable=False)
 

@@ -10,7 +10,7 @@ def display_contract(contract: Contract, separator: bool = False):
         print("---")
     print(f"Id : {contract.id}\n"
           f"Client : {contract.client.fullname} ({contract.client.email})\n"
-          f"Sale User : {contract.sale_user.fullname} ({contract.sale_user.email})\n"
+          f"Sale User : {contract.client.sale_user.fullname} ({contract.client.sale_user.email})\n"
           f"Total Amount : {contract.total_amount}\n"
           f"Remaining Amount : {contract.remaining_amount}\n"
           f"Signed : {contract.is_signed}")
@@ -40,12 +40,6 @@ def ask_for_contract_update(contract: Contract):
             raise click.ClickException('Invalid client id')
         client_id = int(client_id)
 
-    sale_user_id = input("Sale User Id : ") or None
-    if sale_user_id:
-        if not sale_user_id.isdigit():
-            raise click.ClickException('Invalid sale user id')
-        sale_user_id = int(sale_user_id)
-
     total_amount = input("Total Amount : ") or None
     if total_amount:
         if not total_amount.isdigit():
@@ -70,7 +64,6 @@ def ask_for_contract_update(contract: Contract):
 
     return {
         'client_id': client_id,
-        'sale_user_id': sale_user_id,
         'total_amount': total_amount,
         'remaining_amount': remaining_amount,
         'is_signed': is_signed

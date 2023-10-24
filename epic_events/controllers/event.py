@@ -5,7 +5,7 @@ from epic_events.models.contract import Contract
 from epic_events.models.event import Event
 from epic_events.models.role import Roles, Role
 from epic_events.models.user import User
-from epic_events.permissions import permission, IsAuthenticated
+from epic_events.permissions import permission, IsAuthenticated, IsRolePerson
 from epic_events.validators import validate_name
 from epic_events.views.contract import display_contract_not_exists
 from epic_events.views.event import display_event, display_event_not_exists, ask_for_event_update, display_events, \
@@ -15,21 +15,21 @@ from epic_events.views.user import display_user_not_exists
 
 @click.group(name='events')
 @click.pass_context
-@permission([IsAuthenticated])
+@permission([IsAuthenticated()])
 def events(ctx, *args, **kwargs):
     pass
 
 
 @events.command(name='create')
 @click.option('--contract-id', 'cid', prompt='Contract Id', type=click.IntRange(1))
-@click.option('--support-user-id', 'suid', prompt='Support User Id', type=click.IntRange(1))
 @click.option('--start-date', prompt='Start Date (DD/MM/YYYY)', type=click.DateTime(["%d/%m/%Y"]))
 @click.option('--end-date', prompt='End Date (DD/MM/YYYY)', type=click.DateTime(["%d/%m/%Y"]))
 @click.option('--location', prompt='Location', callback=validate_name)
 @click.option('--attendees', prompt='Attendees', type=click.IntRange(0))
 @click.option('--notes', prompt='Notes', type=str)
 @click.pass_context
-def _create(ctx, cid, suid, start_date, end_date, location, attendees, notes, *args, **kwargs):
+@permission([IsRolePerson(Roles.SALE)])
+def _create(ctx, cid, start_date, end_date, location, attendees, notes, *args, **kwargs):
     session = ctx.obj['session']
     contract = session.scalar(select(Contract).where(Contract.id == cid))
     if not contract:
@@ -37,21 +37,12 @@ def _create(ctx, cid, suid, start_date, end_date, location, attendees, notes, *a
     if not contract.is_signed:
         return display_contract_not_signed()
 
-    support_user = session.scalar(
-        select(User)
-        .join(User.role)
-        .where(User.id == suid)
-        .where(Role.name == Roles.SUPPORT.name)
-    )
-    if not support_user:
-        return display_user_not_exists()
-
     if end_date <= start_date:
         raise click.BadParameter('end_date should be after start_date')
 
     event = Event(
         contract=contract,
-        support_user=support_user,
+        support_user=None,
         start_date=start_date,
         end_date=end_date,
         location=location,
@@ -63,8 +54,34 @@ def _create(ctx, cid, suid, start_date, end_date, location, attendees, notes, *a
     return display_event(event, separator=True)
 
 
+@events.command(name='link-support')
+@click.option('--id', 'eid', prompt='Id', type=click.IntRange(1))
+@click.option('--support-user-id', 'suid', prompt='Support User Id', type=click.IntRange(1))
+@click.pass_context
+@permission([IsRolePerson(Roles.MANAGEMENT)])
+def _link_support(ctx, eid, suid, *args, **kwargs):
+    session = ctx.obj['session']
+    event = session.scalar(select(Event).where(Event.id == eid))
+    if not event:
+        return display_event_not_exists()
+
+    support_user = session.scalar(
+        select(User)
+        .join(User.role)
+        .where(User.id == suid)
+        .where(Role.name == Roles.SUPPORT.name)
+    )
+    if not support_user:
+        return display_user_not_exists()
+    event.support_user = support_user
+
+    session.add(event)
+    session.commit()
+    return display_event(event, separator=True)
+
+
 @events.command(name='update')
-@click.option('--id', 'eid', prompt='Id', type=int)
+@click.option('--id', 'eid', prompt='Id', type=click.IntRange(1))
 @click.pass_context
 def _update(ctx, eid, *args, **kwargs):
     session = ctx.obj['session']
@@ -83,16 +100,6 @@ def _update(ctx, eid, *args, **kwargs):
         if not contract.is_signed:
             return display_contract_not_signed()
         event.contract = contract
-    if updated_event_info['support_user_id'] is not None:
-        support_user = session.scalar(
-            select(User)
-            .join(User.role)
-            .where(User.id == updated_event_info['support_user_id'])
-            .where(Role.name == Roles.SUPPORT.name)
-        )
-        if not support_user:
-            return display_user_not_exists()
-        event.support_user = support_user
     if updated_event_info['start_date'] is not None:
         event.start_date = updated_event_info['start_date']
     if updated_event_info['end_date'] is not None:
@@ -121,8 +128,9 @@ def _list(ctx, *args, **kwargs):
 
 
 @events.command(name='delete')
-@click.option('--id', 'eid', prompt='Id', type=int)
+@click.option('--id', 'eid', prompt='Id', type=click.IntRange(1))
 @click.pass_context
+@permission([IsRolePerson(Roles.SALE)])
 def _delete(ctx, eid, *args, **kwargs):
     session = ctx.obj['session']
     event = session.scalar(select(Event).where(Event.id == eid))

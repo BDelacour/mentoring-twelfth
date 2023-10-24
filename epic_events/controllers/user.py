@@ -1,9 +1,9 @@
 import click
 from sqlalchemy import select
 
-from epic_events.models.role import Role
+from epic_events.models.role import Role, Roles
 from epic_events.models.user import User
-from epic_events.permissions import permission, IsAuthenticated
+from epic_events.permissions import permission, IsAuthenticated, IsRolePerson
 from epic_events.validators import validate_email, validate_password, validate_name, validate_role
 from epic_events.views.user import display_users, display_user, display_user_deletion, display_user_exists, \
     display_user_not_exists, ask_for_user_update, display_role_not_exists
@@ -11,7 +11,6 @@ from epic_events.views.user import display_users, display_user, display_user_del
 
 @click.group(name='users')
 @click.pass_context
-@permission([IsAuthenticated])
 def users(ctx, *args, **kwargs):
     pass
 
@@ -42,8 +41,9 @@ def _create(ctx, fullname, email, role, password, *args, **kwargs):
 
 
 @users.command(name='update')
-@click.option('--id', 'uid', prompt='Id', type=int)
+@click.option('--id', 'uid', prompt='Id', type=click.IntRange(1))
 @click.pass_context
+@permission([IsAuthenticated(), IsRolePerson(Roles.MANAGEMENT)])
 def _update(ctx, uid, *args, **kwargs):
     session = ctx.obj['session']
     user = session.scalar(select(User).where(User.id == uid))
@@ -67,6 +67,7 @@ def _update(ctx, uid, *args, **kwargs):
 
 @users.command(name='list')
 @click.pass_context
+@permission([IsAuthenticated()])
 def _list(ctx, *args, **kwargs):
     session = ctx.obj['session']
     user_list = session.scalars(select(User)).all()
@@ -74,8 +75,9 @@ def _list(ctx, *args, **kwargs):
 
 
 @users.command(name='delete')
-@click.option('--id', 'uid', prompt='Id', type=int)
+@click.option('--id', 'uid', prompt='Id', type=click.IntRange(1))
 @click.pass_context
+@permission([IsAuthenticated(), IsRolePerson(Roles.MANAGEMENT)])
 def _delete(ctx, uid, *args, **kwargs):
     session = ctx.obj['session']
     user = session.scalar(select(User).where(User.id == uid))

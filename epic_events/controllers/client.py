@@ -4,7 +4,7 @@ from sqlalchemy import select
 from epic_events.models.client import Client
 from epic_events.models.role import Roles, Role
 from epic_events.models.user import User
-from epic_events.permissions import permission, IsAuthenticated
+from epic_events.permissions import permission, IsAuthenticated, IsRolePerson
 from epic_events.validators import validate_email, validate_name, validate_phone_number
 from epic_events.views.client import display_client, ask_for_client_update, display_clients, display_client_deletion, \
     display_client_not_exists
@@ -13,7 +13,7 @@ from epic_events.views.user import display_user_not_exists
 
 @click.group(name='clients')
 @click.pass_context
-@permission([IsAuthenticated])
+@permission([IsAuthenticated()])
 def clients(ctx, *args, **kwargs):
     pass
 
@@ -23,25 +23,18 @@ def clients(ctx, *args, **kwargs):
 @click.option('--email', prompt='Email', callback=validate_email)
 @click.option('--phone-number', prompt='Phone Number', callback=validate_phone_number)
 @click.option('--company', prompt='Company', callback=validate_name)
-@click.option('--sale-user-id', 'suid', prompt='Sale User Id', type=int)
 @click.pass_context
-def _create(ctx, fullname, email, phone_number, company, suid, *args, **kwargs):
+@permission([IsRolePerson(Roles.SALE)])
+def _create(ctx, fullname, email, phone_number, company, *args, **kwargs):
     session = ctx.obj['session']
-    sale_user = session.scalar(
-        select(User)
-        .join(User.role)
-        .where(User.id == suid)
-        .where(Role.name == Roles.SALE.name)
-    )
-    if not sale_user:
-        return display_user_not_exists()
+    user = ctx.obj['user']
 
     client = Client(
         fullname=fullname,
         email=email,
         phone_number=phone_number,
         company_name=company,
-        sale_user=sale_user,
+        sale_user=user,
     )
     session.add(client)
     session.commit()
@@ -51,6 +44,7 @@ def _create(ctx, fullname, email, phone_number, company, suid, *args, **kwargs):
 @clients.command(name='update')
 @click.option('--id', 'cid', prompt='Id', type=int)
 @click.pass_context
+@permission([IsRolePerson(Roles.SALE)])
 def _update(ctx, cid, *args, **kwargs):
     session = ctx.obj['session']
     client = session.scalar(select(Client).where(Client.id == cid))
@@ -93,6 +87,7 @@ def _list(ctx, *args, **kwargs):
 @clients.command(name='delete')
 @click.option('--id', 'cid', prompt='Id', type=int)
 @click.pass_context
+@permission([IsRolePerson(Roles.MANAGEMENT)])
 def _delete(ctx, cid, *args, **kwargs):
     session = ctx.obj['session']
     client = session.scalar(select(Client).where(Client.id == cid))

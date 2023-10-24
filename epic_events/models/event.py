@@ -10,8 +10,8 @@ class Event(Base):
     __tablename__ = 'events'
 
     id: Mapped[int] = Column(Integer, primary_key=True)
-    contract_id: Mapped[int] = Column(Integer, ForeignKey('contracts.id'), nullable=False)
-    support_user_id: Mapped[int] = Column(Integer, ForeignKey('users.id'), nullable=False)
+    contract_id: Mapped[int] = Column(Integer, ForeignKey('contracts.id', ondelete='CASCADE'), nullable=False)
+    support_user_id: Mapped[int] = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'), nullable=True)
     start_date: Mapped[DateTime] = Column(DateTime, nullable=False)
     end_date: Mapped[DateTime] = Column(DateTime, nullable=False)
     location: Mapped[str] = Column(String(128), nullable=False)
