@@ -3,8 +3,8 @@ from typing import List
 
 import click
 
-from epic_events.models.event import Event, Event
-from epic_events.validators import validate_name, validate_email, validate_phone_number
+from epic_events.models.event import Event
+from epic_events.validators import validate_name
 
 
 def display_event(event: Event, separator: bool = False):

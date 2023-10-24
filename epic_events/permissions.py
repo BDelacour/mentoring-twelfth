@@ -22,5 +22,7 @@ def permission(permissions: List[Type[Permission]]):
                 if not p.check(ctx):
                     raise click.ClickException('Unauthorized')
             return func(ctx, *args, **kwargs)
+
         return wrapper
+
     return decorator

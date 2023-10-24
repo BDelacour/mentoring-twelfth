@@ -6,9 +6,7 @@ from epic_events.models.contract import Contract
 from epic_events.models.role import Roles, Role
 from epic_events.models.user import User
 from epic_events.permissions import permission, IsAuthenticated
-from epic_events.validators import validate_email, validate_name, validate_phone_number
-from epic_events.views.client import display_client, ask_for_client_update, display_clients, display_client_deletion, \
-    display_client_not_exists
+from epic_events.views.client import display_client_not_exists
 from epic_events.views.contract import display_contract, display_contract_not_exists, ask_for_contract_update, \
     display_contracts, display_contract_deletion
 from epic_events.views.user import display_user_not_exists

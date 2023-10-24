@@ -2,7 +2,6 @@ from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship, Mapped
 
 from epic_events.models.base import Base, utcnow
-from epic_events.models.client import Client
 from epic_events.models.contract import Contract
 from epic_events.models.user import User
 

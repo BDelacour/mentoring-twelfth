@@ -16,4 +16,5 @@ def orm_middleware(func):
         with SessionMaker() as session:
             ctx.obj['session'] = session
             return func(ctx, *args, **kwargs)
+
     return wrapper

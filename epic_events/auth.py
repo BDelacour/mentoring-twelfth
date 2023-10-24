@@ -1,7 +1,6 @@
-import os
 import datetime
+import os
 
-import click
 import jwt
 from jwt import InvalidTokenError
 from sqlalchemy import select
@@ -18,7 +17,8 @@ token_duration = 3600
 
 
 def authenticate(user: User):
-    token = jwt.encode({"uid": user.id, "exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=token_duration)}, SECRET, algorithm="HS256")
+    token = jwt.encode({"uid": user.id, "exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=token_duration)},
+                       SECRET, algorithm="HS256")
     clear_authentication()
     with open(token_filepath, 'w') as fp:
         fp.write(token)

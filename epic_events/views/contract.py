@@ -3,7 +3,6 @@ from typing import List
 import click
 
 from epic_events.models.contract import Contract
-from epic_events.validators import validate_name, validate_email, validate_phone_number
 
 
 def display_contract(contract: Contract, separator: bool = False):

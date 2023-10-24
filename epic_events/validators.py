@@ -1,11 +1,8 @@
 import re
 
 import click
-from sqlalchemy import select
 
-from epic_events.models.client import Client
-from epic_events.models.role import Role, Roles
-from epic_events.models.user import User
+from epic_events.models.role import Roles
 
 
 def validate_password(ctx, param, value):
