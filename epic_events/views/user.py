@@ -43,7 +43,7 @@ def ask_for_user_update(user: User):
     display_user(user)
     print("---\nLeave empty for same")
 
-    fullname = input("Full name : ") or None
+    fullname = input("Full Name : ") or None
     if fullname:
         validate_name(None, "fullname", fullname)
 
@@ -65,5 +65,6 @@ def ask_for_user_update(user: User):
     return {
         'fullname': fullname,
         'email': email,
+        'role': role,
         'password': password
     }

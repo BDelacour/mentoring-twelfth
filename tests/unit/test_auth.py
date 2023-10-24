@@ -23,14 +23,14 @@ def test_authenticate(fake_user):
     assert datetime.datetime.utcfromtimestamp(payload["exp"]) - expected_expiration < datetime.timedelta(seconds=5)
 
 
-@pytest.mark.parametrize("exists,is_file,expected",
+@pytest.mark.parametrize("exists,is_file",
                          [
-                             (False, False, False),
-                             (False, True, False),
-                             (True, False, False),
-                             (True, True, True),
+                             (False, False),
+                             (False, True),
+                             (True, False),
+                             (True, True),
                          ])
-def test_clear_authentication(exists, is_file, expected):
+def test_clear_authentication(exists, is_file):
     expected_filepath = os.path.join(os.path.expanduser("~"), ".epicevents", "user.key")
 
     with mock.patch('epic_events.auth.os') as mock_os:
