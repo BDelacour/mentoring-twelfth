@@ -12,7 +12,6 @@ class Event(Base):
 
     id: Mapped[int] = Column(Integer, primary_key=True)
     contract_id: Mapped[int] = Column(Integer, ForeignKey('contracts.id'), nullable=False)
-    client_id: Mapped[int] = Column(Integer, ForeignKey('clients.id'), nullable=False)
     support_user_id: Mapped[int] = Column(Integer, ForeignKey('users.id'), nullable=False)
     start_date: Mapped[DateTime] = Column(DateTime, nullable=False)
     end_date: Mapped[DateTime] = Column(DateTime, nullable=False)
@@ -23,5 +22,4 @@ class Event(Base):
     update_date: Mapped[DateTime] = Column(DateTime, server_default=utcnow(), onupdate=utcnow(), nullable=False)
 
     contract: Mapped[Contract] = relationship('Contract', back_populates='events')
-    client: Mapped[Client] = relationship('Client', back_populates='events')
     support_user: Mapped[User] = relationship('User', back_populates='events')

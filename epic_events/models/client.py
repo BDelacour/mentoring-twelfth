@@ -22,4 +22,3 @@ class Client(Base):
     sale_user: Mapped[User] = relationship('User', back_populates='clients')
 
     contracts: Mapped[List['Contract']] = relationship('Contract', back_populates='client')
-    events: Mapped[List['Event']] = relationship('Event', back_populates='client')
