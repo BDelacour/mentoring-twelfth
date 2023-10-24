@@ -9,10 +9,10 @@ from epic_events.models.user import User
 
 SECRET = "changeme"
 
-app_token_dir = os.path.join(os.path.expanduser('~'), '.epicevents')
+app_token_dir = os.path.join(os.path.expanduser("~"), ".epicevents")
 os.makedirs(app_token_dir, exist_ok=True)
 
-token_filepath = os.path.join(app_token_dir, f"user.key")
+token_filepath = os.path.join(app_token_dir, "user.key")
 token_duration = 3600
 
 
